@@ -13,22 +13,19 @@ enum APIError: Error {
   case unreachable
   case failedRequest
   case invalidResponse
-  
-  
 }
 
-
-extension APIError :LocalizedError {
-  var localizedDescription: String {
-   return switch self {
-    case .unknown:
-     NSLocalizedString("unknown", comment: "")
-    case .unreachable:
-     NSLocalizedString("unreachable", comment: "")
-    case .invalidResponse:
-     NSLocalizedString("invalidResponse", comment: "")
-   case .failedRequest:
-     NSLocalizedString("failedRequest", comment: "")
-   }
-  }
+extension APIError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .unknown:
+            return NSLocalizedString("unknown", comment: "")
+        case .unreachable:
+            return NSLocalizedString("unreachable", comment: "")
+        case .failedRequest:
+            return NSLocalizedString("failedRequest", comment: "")
+        case .invalidResponse:
+            return NSLocalizedString("invalidResponse", comment: "")
+        }
+    }
 }

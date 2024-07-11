@@ -41,7 +41,8 @@ final class EngineersViewModel_Tests: XCTestCase {
     viewModelTest.fetchEngineers()
     
     viewModelTest.$error.receive(on: DispatchQueue.main).sink{ error in
-      XCTAssertEqual(error?.localizedDescription, "")
+      guard let error else { return }
+      XCTAssertEqual(error.localizedDescription, "unknown")
       expectation.fulfill()
     }.store(in: &subscriptions)
     

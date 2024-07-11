@@ -6,7 +6,11 @@
 //
 
 class EngineersInteractor: EngineersBoundary {
-  private let client = APIClient()
+  private let client: APIService
+  
+  init(client: APIService = APIClient()) {
+      self.client = client
+  }
   
   func fetchEngineers() async throws -> [Engineer] {
    return try await client.fetchEngineers()

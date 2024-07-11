@@ -52,5 +52,4 @@ final class EngineersViewModel {
       engineers.sorted(using: KeyPathComparator(\.quickStats.bugs))
     }
   }
-  
 }

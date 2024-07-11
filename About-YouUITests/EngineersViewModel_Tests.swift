@@ -26,7 +26,7 @@ final class EngineersViewModel_Tests: XCTestCase {
   
   func test_dataFetchSuccess() {
     let expectation = XCTestExpectation(description: "failure")
-    viewModelTest.$didFetchData.receive(on: DispatchQueue.main).dropFirst(1).sink { isFetched in
+    viewModelTest.$didFetchData.receive(on: DispatchQueue.global()).dropFirst(1).sink { isFetched in
       XCTAssertTrue(isFetched!)
       expectation.fulfill()
     }.store(in: &subscriptions)
@@ -40,7 +40,7 @@ final class EngineersViewModel_Tests: XCTestCase {
     let expectation = XCTestExpectation(description: "failure")
     viewModelTest.fetchEngineers()
     
-    viewModelTest.$error.receive(on: DispatchQueue.main).sink{ error in
+    viewModelTest.$error.receive(on: DispatchQueue.global()).sink{ error in
       guard let error else { return }
       XCTAssertEqual(error.localizedDescription, "unknown")
       expectation.fulfill()

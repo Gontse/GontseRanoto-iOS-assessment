@@ -1,7 +1,15 @@
 import UIKit
 
-class OrderByTableViewController: UITableViewController {
+enum OrderByFilter: String, CaseIterable {
+  case years = "Years"
+  case coffee = "Coffees"
+  case bugs = "Bugs"
+}
 
+final class OrderByTableViewController: UITableViewController {
+
+  var didSetOrderbyFilter: ((OrderByFilter) -> Void)?
+  
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: String(describing: UITableViewCell.self))
@@ -12,23 +20,18 @@ class OrderByTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+      return OrderByFilter.allCases.count
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UITableViewCell.self))
-        if indexPath.row == 0 {
-            cell?.textLabel?.text = "Years"
-        } else if indexPath.row == 1 {
-            cell?.textLabel?.text = "Coffees"
-        } else {
-            cell?.textLabel?.text = "Bugs"
-        }
-        return cell ?? UITableViewCell()
-    }
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    guard let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: UITableViewCell.self))
+    else { return UITableViewCell() }
+    cell.textLabel?.text = OrderByFilter.allCases[indexPath.row].rawValue
+    return cell
+  }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+      didSetOrderbyFilter?(OrderByFilter.allCases[indexPath.row])
     }
-
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23077.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23068.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -54,9 +54,13 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="eGO-g1-idi" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="4oB-2K-k6J"/>
+                    <constraint firstItem="Rxp-kk-SUr" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="J8f-qm-UgQ"/>
                     <constraint firstAttribute="trailing" secondItem="Rxp-kk-SUr" secondAttribute="trailing" constant="15" id="Mcp-ye-tM9"/>
+                    <constraint firstAttribute="trailing" secondItem="Rxp-kk-SUr" secondAttribute="trailing" constant="15" id="RNp-mz-SAZ"/>
+                    <constraint firstAttribute="bottom" secondItem="Rxp-kk-SUr" secondAttribute="bottom" constant="15" id="VJz-Rl-cnw"/>
                     <constraint firstItem="Rxp-kk-SUr" firstAttribute="leading" secondItem="eGO-g1-idi" secondAttribute="trailing" constant="10" id="dwu-AO-d0X"/>
                     <constraint firstAttribute="bottom" secondItem="Rxp-kk-SUr" secondAttribute="bottom" constant="15" id="gdY-Bo-tAI"/>
+                    <constraint firstItem="Rxp-kk-SUr" firstAttribute="leading" secondItem="eGO-g1-idi" secondAttribute="trailing" constant="15" id="heX-If-Hsv"/>
                     <constraint firstItem="Rxp-kk-SUr" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="kZX-5X-MgR"/>
                     <constraint firstItem="Rxp-kk-SUr" firstAttribute="centerY" secondItem="eGO-g1-idi" secondAttribute="centerY" id="tk8-Mw-9ge"/>
                 </constraints>

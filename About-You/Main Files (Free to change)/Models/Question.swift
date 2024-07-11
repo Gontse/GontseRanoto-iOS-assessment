@@ -19,7 +19,7 @@ struct Answer: Codable {
     let index: Int?
 }
 
-class MainQuestions {
+final class MainQuestions {
     static func questionOne(answer: Answer) -> Question {
         return Question(questionText: "When do you have the most energy?",
                         answerOptions: ["6am", "12pm", "6pm", "Midnight"],

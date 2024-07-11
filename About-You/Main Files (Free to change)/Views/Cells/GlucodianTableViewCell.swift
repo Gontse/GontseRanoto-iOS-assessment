@@ -1,6 +1,7 @@
 import UIKit
 
-class GlucodianTableViewCell: UITableViewCell {
+final class GlucodianTableViewCell: UITableViewCell {
+  
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var roleLabel: UILabel!

@@ -1,77 +1,106 @@
 import UIKit
+import Combine
 
-class EngineersTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
-    var engineers: [Engineer] = Engineer.testingData()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        title = "Engineers at Glucode"
-        tableView.backgroundColor = .white
-        registerCells()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setupNavigationController()
-    }
-
-    private func setupNavigationController() {
-        navigationController?.navigationBar.backgroundColor = UIColor.white
-        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
-
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Order by",
+final class EngineersTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
+  private lazy var viewModel = EngineersViewModel()
+  private var subscriptions: Set<AnyCancellable> = []
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    title = "Engineers at Glucode"
+    tableView.backgroundColor = .white
+    bindViewModel()
+    registerCells()
+    viewModel.fetchEngineers()
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    setupNavigationController()
+  }
+  
+  private func setupNavigationController() {
+    navigationController?.navigationBar.backgroundColor = UIColor.white
+    navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+    
+    navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Order by",
                                                         style: .plain,
                                                         target: self,
                                                         action: #selector(orderByTapped))
-        navigationItem.rightBarButtonItem?.tintColor = .black
+    navigationItem.rightBarButtonItem?.tintColor = .black
+  }
+  
+  @objc func orderByTapped() {
+    guard let from = navigationItem.rightBarButtonItem else { return }
+    let controller = OrderByTableViewController(style: .plain)
+    let size = CGSize(width: 200,
+                      height: 150)
+    
+    present(popover: controller,
+            from: from,
+            size: size,
+            arrowDirection: .up)
+    
+    controller.didSetOrderbyFilter = { [weak self] sortByValue  in
+      guard let self else { return }
+      viewModel.sortEngineers(By: sortByValue)
+      
+      tableView.reloadData()
+      controller.dismiss(animated: true)
     }
+  }
+  
+  func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+    return .none
+  }
+  
+  private func registerCells() {
+    tableView.register(UINib(nibName: String(describing: GlucodianTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: GlucodianTableViewCell.self))
+  }
+  
+  private func bindViewModel() {
+    viewModel.$error.receive(on: DispatchQueue.main).sink{ _ in
+      //TODO: Error Alert
+    }.store(in: &subscriptions)
+    
+    viewModel.$didFetchData.receive(on: DispatchQueue.main).dropFirst(1).sink{ [weak self] isFetched in
+      guard let self, let isFetched, isFetched else { return }
+      tableView.reloadData()
+    }.store(in: &subscriptions)
+  }
+}
 
-    @objc func orderByTapped() {
-        guard let from = navigationItem.rightBarButtonItem else { return }
-        let controller = OrderByTableViewController(style: .plain)
-        let size = CGSize(width: 200,
-                          height: 150)
+// MARK: Tableview datasource & delegate
 
-        present(popover: controller,
-             from: from,
-             size: size,
-             arrowDirection: .up)
-    }
-
-    func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
-            return .none
-        }
-
-    private func registerCells() {
-        tableView.register(UINib(nibName: String(describing: GlucodianTableViewCell.self), bundle: nil), forCellReuseIdentifier: String(describing: GlucodianTableViewCell.self))
-    }
-
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
-    }
-
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return CGFloat.leastNormalMagnitude
-    }
-
-    // MARK: - Table view data source
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return engineers.count
-    }
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: GlucodianTableViewCell.self)) as? GlucodianTableViewCell
-        cell?.setUp(with: engineers[indexPath.row].name, role: engineers[indexPath.row].role)
-        cell?.accessoryType = .disclosureIndicator
-        return cell ?? UITableViewCell()
-    }
-
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let controller = QuestionsViewController.loadController(with: engineers[indexPath.row].questions)
-        navigationController?.pushViewController(controller, animated: true)
-    }
+extension EngineersTableViewController {
+  
+  override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+    return nil
+  }
+  
+  override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    return CGFloat.leastNormalMagnitude
+  }
+  
+  // MARK: - Table view data source
+  override func numberOfSections(in tableView: UITableView) -> Int {
+    return 1
+  }
+  
+  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return viewModel.engineers.count
+  }
+  
+  override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    guard let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: GlucodianTableViewCell.self)) as? GlucodianTableViewCell,
+          let engineer = viewModel.getEngineer(for: indexPath.row) else { return UITableViewCell() }
+    cell.setUp(with: engineer.name, role: engineer.role)
+    cell.accessoryType = .disclosureIndicator
+    return cell
+  }
+  
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let controller = QuestionsViewController.loadController(with: viewModel.getEngineerQuestions(for: indexPath.row))
+    navigationController?.pushViewController(controller, animated: true)
+  }
 }

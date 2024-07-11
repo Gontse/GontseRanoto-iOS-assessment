@@ -27,6 +27,10 @@ class RootScreenController {
     }
 
     func presentAppropriateScreenForLaunch() {
+      if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+        return
+      }
+
         if UserDefaults.didStartAssignment {
             show(screen: .engineers)
         } else {
